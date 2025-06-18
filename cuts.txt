@@ -1,0 +1,11 @@
+# [caminho do arquivo] [largura (l) ou altura (h)] [medida da largura ou altura]
+# [x inicial] [x final] [y inicial] [y final]
+# salta uma linha pra mudar de arquivo
+
+'Curse of strahd/CofinMaker/01 - Coffin Maker's Shop (Ground Floor).jpg' l 19 
+7 13 7 10
+2 5 3 8
+
+'Curse of strahd/CofinMaker/02 - Coffin Maker's Shop (1st Floor).jpg' l 19 
+2 6 7 13
+5 10 4 14
