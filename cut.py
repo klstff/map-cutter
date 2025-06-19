@@ -7,10 +7,10 @@ def crop_and_resize(input_path, length, height, x_start, x_end, y_start, y_end, 
     image = Image.open(input_path).convert("RGBA")
     w_px, h_px = image.size
     pps = w_px / length if length else h_px / height
-    left, right = (x_start - 1) * pps, x_end * pps
-    top, bottom = (y_start - 1) * pps, y_end * pps
+    left, right = (x_start) * pps, x_end * pps
+    top, bottom = (y_start) * pps, y_end * pps
     cropped = image.crop((left, top, right, bottom))
-    squares_x, squares_y = x_end - x_start + 1, y_end - y_start + 1
+    squares_x, squares_y = x_end - x_start, y_end - y_start
     resized = cropped.resize((int(squares_x * PPI), int(squares_y * PPI)), Image.LANCZOS)
     output_folder = build_output_folder(input_path, output_base_folder)
     os.makedirs(output_folder, exist_ok=True)
