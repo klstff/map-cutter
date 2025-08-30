@@ -1,7 +1,7 @@
 import os, re, sys
 from PIL import Image
 
-PPI = 300
+DPI = 300
 
 def crop_and_resize(input_path, length, height, x_start, x_end, y_start, y_end, output_base_folder):
     image = Image.open(input_path).convert("RGBA")
@@ -11,12 +11,12 @@ def crop_and_resize(input_path, length, height, x_start, x_end, y_start, y_end, 
     top, bottom = (y_start) * pps, y_end * pps
     cropped = image.crop((left, top, right, bottom))
     squares_x, squares_y = x_end - x_start, y_end - y_start
-    resized = cropped.resize((int(squares_x * PPI), int(squares_y * PPI)), Image.LANCZOS)
+    resized = cropped.resize((int(squares_x * DPI), int(squares_y * DPI)), Image.LANCZOS)
     output_folder = build_output_folder(input_path, output_base_folder)
     os.makedirs(output_folder, exist_ok=True)
     file_number = get_next_file_number(output_folder)
     output_path = os.path.join(output_folder, f"{file_number}.png")
-    resized.save(output_path, PPI=(PPI, PPI))
+    resized.save(output_path, DPI=(DPI, DPI))
     return output_path, squares_x, squares_y
 
 def build_output_folder(input_path, output_base_folder):
@@ -39,19 +39,19 @@ def apply_grid(img, grid_path, squares_x, squares_y):
     if not os.path.exists(grid_path):
         return img
     max_w, max_h = 8, 11
-    img_w, img_h = int(squares_x * PPI), int(squares_y * PPI)
+    img_w, img_h = int(squares_x * DPI), int(squares_y * DPI)
     grid = Image.open(grid_path).convert("RGBA")
     if squares_x > max_w:
         grid = grid.rotate(90, expand=True)
         max_w, max_h = max_h, max_w
     if squares_y > max_h:
         raise ValueError("a imagem não cabe na folha A4")
-    grid = grid.resize((max_w * PPI, max_h * PPI), Image.LANCZOS)
+    grid = grid.resize((max_w * DPI, max_h * DPI), Image.LANCZOS)
     grid_cropped = grid.crop((0, 0, img_w, img_h))
     return Image.alpha_composite(img, grid_cropped)
 
 def create_a4_with_image(img, output_path):
-    a4_w, a4_h = int(8.27 * PPI), int(11.69 * PPI)
+    a4_w, a4_h = int(8.27 * DPI), int(11.69 * DPI)
     w, h = img.size
     if w <= a4_w and h <= a4_h:
         final_img = img
@@ -63,7 +63,7 @@ def create_a4_with_image(img, output_path):
         raise ValueError("a imagem não cabe na folha A4")
     a4 = Image.new('RGB', (a4_w, a4_h), 'white')
     a4.paste(final_img.convert("RGB"), pos)
-    a4.save(output_path, PPI=(PPI, PPI))
+    a4.save(output_path, dpi=(DPI, DPI))
 
 def process_txt(file_path, output_folder, print_mode=False, grid_mode=False):
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -99,7 +99,7 @@ def process_txt(file_path, output_folder, print_mode=False, grid_mode=False):
                     elif x_start % 1 != 0 and y_start % 1 != 0:
                         grid_path = 'gridxy.png'
                     img_with_grid = apply_grid(img, "./assets/"+grid_path, sx, sy)
-                    img_with_grid.save(f"{base}_grid.png", PPI=(PPI, PPI))
+                    img_with_grid.save(f"{base}_grid.png", dpi=(DPI, DPI))
                 else:
                     img_with_grid = img
                 if print_mode:
@@ -119,7 +119,7 @@ def make_pdf(folder, grid_mode=False):
     first, *rest = imgs_opened
     folder_name = os.path.basename(folder)
     pdf_path = os.path.join(folder, f"{folder_name}.pdf")
-    first.save(pdf_path, save_all=True, append_images=rest)
+    first.save(pdf_path, save_all=True, append_images=rest, dpi=(DPI, DPI))
 
 if __name__ == "__main__":
     txt_file, output_folder = 'cuts.txt', 'output'
